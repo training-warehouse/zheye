@@ -1,6 +1,6 @@
 <template>
   <div class="validate-input-container pb-3">
-    <input class="form-control" @blur="ValidateInput"
+    <input class="form-control" @blur="validateInput"
            :value="inputRef.val"
            @input="updateValue"
            :class="{'is-invalid':inputRef.error}"
@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue'
+import { defineComponent, PropType, reactive, onMounted } from 'vue'
+import { emitter } from '@/components/ValidateForm.vue'
 
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
@@ -39,7 +40,7 @@ export default defineComponent({
       inputRef.val = targetValue
       context.emit('update:modelValue', targetValue)
     }
-    const ValidateInput = () => {
+    const validateInput = () => {
       if (props.rules) {
         const allPassed = props.rules.every(rule => {
           let passed = true
@@ -57,11 +58,16 @@ export default defineComponent({
           return passed
         })
         inputRef.error = !allPassed
+        return allPassed
       }
+      return true
     }
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput)
+    })
     return {
       inputRef,
-      ValidateInput,
+      validateInput,
       updateValue
     }
   }
