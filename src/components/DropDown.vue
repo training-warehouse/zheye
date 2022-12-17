@@ -19,7 +19,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup () {
     const isOpen = ref(false)
     const dropdownRef = ref<null | HTMLElement>(null)
 
